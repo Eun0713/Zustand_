@@ -1,4 +1,25 @@
+import { create } from "zustand";
+import { combine } from "zustand/middleware";
+
+const useGameStore = create(
+  combine({ squares: Array(9).fill(null) }, (set) => {
+    return {
+      setSquares: (nextSquares) => {
+        set((state) => ({
+          squares:
+            typeof nextSquares === "function"
+              ? nextSquares(state.squares)
+              : nextSquares,
+        }));
+      },
+    };
+  })
+);
+
 export default function Board() {
+  const squares = useGameStore((state) => state.squares);
+  const setSquares = useGameStore((state) => state.setSquares);
+
   return (
     <div
       style={{
@@ -10,15 +31,9 @@ export default function Board() {
         border: "1px solid black",
       }}
     >
-      <Square value="1" />
-      <Square value="2" />
-      <Square value="3" />
-      <Square value="4" />
-      <Square value="5" />
-      <Square value="6" />
-      <Square value="7" />
-      <Square value="8" />
-      <Square value="9" />
+      {squares.map((squre, squareIndex) => (
+        <Square key={squareIndex} value={squre} />
+      ))}
     </div>
   );
 }
